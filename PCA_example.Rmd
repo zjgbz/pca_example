@@ -1,0 +1,46 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+# References:
+# https://www.datacamp.com/community/tutorials/pca-analysis-r
+# http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/
+
+# There are multiple methods to compute principle components (PCs) in r. Here I show how you can compute PCs using prcomp.
+
+# load and preprocess the data, the input should be an r dataframe. This mtcars is a built-in dataframe.
+mtcar_sel = mtcars[, c(1:7, 10, 11)]
+
+# Only one line command is needed to compute PCs. The only needed input is a dataframe with each column is a feature while each row is a/an sample/individual/observation.
+# You can choose to center and scale each feature by specifying center = TRUE, scale = TRUE.
+mtcars_pc <- prcomp(mtcar_sel, center = TRUE, scale = TRUE)
+
+# The output of prcomp includes:
+# center: The mean values of each column of the input matrix. The columns are also named as "variables".
+# scale: The standard deviations of each column of the input matrix
+# sdev: The standard deviations of the PCs
+# rotation: The coefficients of PCs, normally named as "loading". This is actually the coefficient of the linear combination of each column of the imput matrix.
+# x: All PCs -- "All" means the maximum number of PCs which is the number of columns of the input matrix.
+```
+
+```{r}
+# Next, I will show the visualization of PCs. I chose "factoextra" package.
+if("factoextra" %in% rownames(installed.packages()) == FALSE) {
+  install.packages("factoextra")
+}
+library(factoextra)
+```
+
+```{r}
+# Histogram shows the percentile of the variations explained by each PC.
+# The "dimensions" for the label of x axis is the dimension of PCs. The 1st dimension is the 1st PC, etc.
+fviz_eig(mtcars_pc)
+# Scatter plot of PC1 and PC2 with text annotation. The warning means that there are annotation cannot be made due to the requirement of "non-overlap" (annotations).
+fviz_pca_ind(mtcars_pc, repel = TRUE)     # Avoid text overlapping
+```
